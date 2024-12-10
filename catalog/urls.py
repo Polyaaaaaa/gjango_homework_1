@@ -5,4 +5,6 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),  # URL для главной страницы
     path('contacts/', views.contacts, name='contacts'),  # URL для страницы контактов
+    path('products/', views.products_list, name='products_list'),  # URL для списка продуктов
+    path('products/<int:product_id>/', views.product_detail, name='product_detail'),  # URL для деталей продукта
 ]
