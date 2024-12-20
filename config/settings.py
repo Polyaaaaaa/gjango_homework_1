@@ -14,11 +14,12 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 
-load_dotenv(override=True)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -60,7 +61,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,15 +82,14 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": os.getenv('NAME'),
-        "USER": os.getenv('USER'),
-        "PASSWORD": os.getenv('PASSWORD'),
-        "HOST": os.getenv('HOST'),
-        "PORT": os.getenv('PORT'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        "NAME": os.getenv('POSTGRES_NAME'),
+        "USER": os.getenv('POSTGRES_USER'),
+        "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
+        "HOST": os.getenv('POSTGRES_HOST'),
+        "PORT": os.getenv('POSTGRES_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -113,9 +113,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 
@@ -125,8 +125,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = 'static/'
+
+STATICFILES_DIRS = (BASE_DIR / 'static',)
+
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
