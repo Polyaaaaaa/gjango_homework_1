@@ -1,4 +1,4 @@
-{% extends 'catalog/base.html' %}
+{% extends 'blog/base.html' %}
 
 {% block title %}
     <h1 class="fw-light">{{ title }}</h1>
@@ -10,7 +10,7 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
             <div class="col">
                 <div class="card shadow-sm">
-                    {% include 'catalog/includes/product_card.html' %}
+                    {% include 'blog/includes/blogpost_card.html' %}
                 </div>
             </div>
         </div>

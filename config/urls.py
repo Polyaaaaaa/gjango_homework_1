@@ -22,7 +22,8 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-                  path('', include('catalog.urls', namespace='catalog')),  # Подключение URL-адресов приложения catalog
+                  path('', include('catalog.urls', namespace='catalog')),
+                  path('blog/', include('blog.urls', namespace='blog')),# Подключение URL-адресов приложения catalog
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.STATIC_URL,
                                                                                          document_root=settings.STATIC_ROOT)
 
