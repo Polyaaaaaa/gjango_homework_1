@@ -1,19 +1,17 @@
 from django.shortcuts import render
-
 from catalog.models import Product
-
-
 # Create your views here.
+
+
 def home(request):
     products = Product.objects.all()
-    return render(request, 'home.html', {'products': products})
+    return render(request, 'catalog/home.html', {'object_list': products})
 
 
 def contacts(request):
-    return render(request, 'contacts.html')  # Представление для страницы контактов
+    return render(request, 'catalog/contacts.html')  # Представление для страницы контактов
 
 
-def product_detail(request, product_id):
-    product = Product.objects.get(id=product_id)
-    context = {'product': product}
-    return render(request, 'catalog/product_detail.html', context)
+def product_detail(request, pk):
+    product = Product.objects.get(id=pk)
+    return render(request, 'catalog/product_detail.html', {'object_list': product})
