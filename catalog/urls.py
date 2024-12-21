@@ -3,7 +3,8 @@ from django.urls import path
 from catalog.views import HomeView, ContactsView, ProductDetailView
 from catalog.apps import CatalogConfig
 
-app_name = CatalogConfig.name
+# app_name = CatalogConfig.name
+app_name = 'products'
 
 urlpatterns = [
     path('', HomeView.as_view(), name='home'),  # URL для главной страницы
