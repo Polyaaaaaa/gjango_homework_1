@@ -17,7 +17,7 @@
                                 <li>{{ product.category }}</li>
                                 <li>{{ product.created_at }}</li>
                             </ul>
-                            <button type="button" class="btn btn-lg btn-block btn-outline-primary">Купить</button>
+                            <a href="{% url 'products:product_detail' product.id %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Детали</a>
                         </div>
 
             </div>

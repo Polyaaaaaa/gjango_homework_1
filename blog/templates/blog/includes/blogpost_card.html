@@ -8,7 +8,8 @@
             <p class="card-text">Контент: {{ object.content }}</p>
             <p class="card-text">Просмотры: {{ object.number_of_views | floatformat:2 }}</p>
             <a class="btn btn-primary" href="{% url 'blog:blogpost_create'%}" role="button">Создать статью</a>
-            <a class="btn btn-primary" href="{% url 'blog:blogpost_create'%}" role="button">Редактировать</a>
+            <a class="btn btn-primary" href="{% url 'blog:blogpost_update' object.id%}" role="button">Редактировать</a>
+            <a class="btn btn-primary" href="{% url 'blog:blogpost_delete' object.id%}" role="button">Удалить</a>
         </div>
     </div>
 </div>

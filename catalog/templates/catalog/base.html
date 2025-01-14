@@ -177,7 +177,8 @@
         <div class="row py-lg-5">
             <div class="col-lg-6 col-md-8 mx-auto">
                 {% block title %}
-
+                    <a href="{% url 'blog:blogpost_list' %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Перейти к статьям</a>
+                    <a href="{% url 'products:product_form' %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Создать продукт</a>
                 {% endblock %}
             </div>
         </div>

@@ -11,6 +11,12 @@ python-dotenv = "^1.0.1"
 django = "^5.1.4"
 psycopg2-binary = "^2.9.10"
 pillow = "^11.0.0"
+psycopg2 = "^2.9.10"
+psycopg = "^3.2.3"
+black = "^24.10.0"
+mypy = "^1.14.1"
+isort = "^5.13.2"
+flake8 = "^7.1.1"
 
 [build-system]
 requires = ["poetry-core"]
