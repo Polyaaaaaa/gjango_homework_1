@@ -1,17 +1,12 @@
 # from django.shortcuts import render
 # from django.views import View
-from django.urls import reverse_lazy, reverse
-from django.views.generic import (
-    ListView,
-    DetailView,
-    TemplateView,
-    CreateView,
-    UpdateView,
-)
+from django.forms import inlineformset_factory
+from django.urls import reverse, reverse_lazy
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView)
 
 from catalog.forms import ProductForm
 from catalog.models import Product
-
 
 # Create your views here.
 
@@ -33,6 +28,16 @@ class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
     success_url = reverse_lazy("products:product_list")
+
+
+class ProductListView(ListView):
+    model = Product
+    template_name = "product_list.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        return Product.objects.filter(publication_sign=True)
+
 
 class ProductUpdateView(UpdateView):
     model = Product

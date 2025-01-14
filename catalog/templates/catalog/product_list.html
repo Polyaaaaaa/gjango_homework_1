@@ -18,6 +18,7 @@
                                 <li>{{ product.created_at }}</li>
                             </ul>
                             <a href="{% url 'products:product_detail' product.id %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Детали</a>
+                            <a href="{% url 'products:product_update' product.id %}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Редактировать</a>
                         </div>
 
             </div>
