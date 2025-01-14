@@ -6,7 +6,7 @@ from .views import (BlogPostCreateView, BlogPostDeleteView, BlogPostDetailView,
 app_name = "blog"
 
 urlpatterns = [
-    path("blog/", BlogPostListView.as_view(), name="blogpost_list"),
+    path("", BlogPostListView.as_view(), name="blogpost_list"),
     path("create/", BlogPostCreateView.as_view(), name="blogpost_create"),
     path("detail/<int:pk>/", BlogPostDetailView.as_view(), name="blogpost_detail"),
     path("update/<int:pk>/", BlogPostUpdateView.as_view(), name="blogpost_update"),
