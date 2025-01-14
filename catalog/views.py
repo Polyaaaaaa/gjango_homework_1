@@ -14,7 +14,7 @@ class HomeView(ListView):
 
 class ContactsView(TemplateView):
     model = Product
-    template_name = 'catalog/contacts.html'
+    template_name = "catalog/contacts.html"
 
 
 class ProductDetailView(DetailView):
