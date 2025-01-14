@@ -1,0 +1,12 @@
+<div class="col">
+    <div class="card shadow-sm h-100">
+        {% if object.image %}
+            <img src="{{ object.image.url }}">
+        {% endif %}
+        <div class="card-body">
+            <p class="card-text">Продукт: {{ object.name }}</p>
+            <p class="card-text">Описание: {{ object.description }}</p>
+            <p class="card-text">Цена: {{ object.price | floatformat:2 }}</p>
+        </div>
+    </div>
+</div>
