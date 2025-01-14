@@ -1,6 +1,7 @@
 from django.shortcuts import render
-from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, DetailView, UpdateView, DeleteView, ListView
+from django.urls import reverse, reverse_lazy
+from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
+                                  UpdateView)
 
 from blog.models import BlogPost
 
@@ -9,14 +10,14 @@ from blog.models import BlogPost
 class BlogPostCreateView(CreateView):
     model = BlogPost
     fields = ("title", "content", "preview", "publication_sign", "number_of_views")
-    success_url = reverse_lazy('blog:blogpost_list')
+    success_url = reverse_lazy("blog:blogpost_list")
 
 
 class BlogPostDetailView(DetailView):
     model = BlogPost
-    template_name = 'blog/blogpost_detail.html'
-    context_object_name = 'post_detail'
-    success_url = reverse_lazy('blog:blogpost_list')
+    template_name = "blog/blogpost_detail.html"
+    context_object_name = "post_detail"
+    success_url = reverse_lazy("blog:blogpost_list")
 
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
@@ -28,24 +29,23 @@ class BlogPostDetailView(DetailView):
 class BlogPostUpdateView(UpdateView):
     model = BlogPost
     fields = ("title", "content", "preview", "publication_sign", "number_of_views")
-    template_name = 'blog/blogpost_form.html'
-    success_url = reverse_lazy('blog:blogpost_list')
+    template_name = "blog/blogpost_form.html"
+    success_url = reverse_lazy("blog:blogpost_list")
 
     def get_success_url(self):
-        return reverse('blog:blogpost_detail', args=[self.kwargs.get('pk')])
+        return reverse("blog:blogpost_detail", args=[self.kwargs.get("pk")])
 
 
 class BlogPostDeleteView(DeleteView):
     model = BlogPost
-    template_name = 'blog/blogpost_confirm_delete.html'
-    success_url = reverse_lazy('blog:blogpost_list')
+    template_name = "blog/blogpost_confirm_delete.html"
+    success_url = reverse_lazy("blog:blogpost_list")
 
 
 class BlogPostListView(ListView):
     model = BlogPost
-    template_name = 'blog/blogpost_list.html'
-    context_object_name = 'posts'
+    template_name = "blog/blogpost_list.html"
+    context_object_name = "posts"
 
     def get_queryset(self):
         return BlogPost.objects.filter(publication_sign=True)
-
