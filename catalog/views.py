@@ -34,6 +34,7 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy("products:product_list")
 
+
 class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
