@@ -45,7 +45,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "catalog",  # Добавлено приложение catalog
     "blog",  # Добавлено приложение blog
+    'users',  # Добавлено приложение users
 ]
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
