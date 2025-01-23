@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import CustomUser
+
 
 class Category(models.Model):
     name = models.CharField(max_length=150, verbose_name="имя категории")
@@ -17,6 +19,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="products", null=True, blank=True)  # Разрешаем NULL
     name = models.CharField(max_length=150, verbose_name="Имя продукта")
     description = models.TextField(
         verbose_name="Описание продукта", null=True, blank=True
@@ -46,5 +49,6 @@ class Product(models.Model):
         permissions = [
             ("can_unpublish_product", "Can unpublish product"),
             ("can_delete_product", "Can delete product"),
+            ("view_all_products", "View all products"),
 
         ]

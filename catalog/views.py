@@ -34,7 +34,7 @@ class ProductDetailView(DetailView):
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
-    success_url = reverse_lazy("products:product_list")
+    success_url = reverse_lazy("products:home")
 
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
@@ -52,3 +52,17 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
         if user.has_perm("catalog.can_unpublish_product") and user.has_perm("catalog.can_delete_product"):
             return ProductModeratorForm
         raise PermissionDenied
+
+
+class ProductListView(LoginRequiredMixin, ListView):
+    model = Product
+    template_name = "catalog/product_list.html"
+    context_object_name = "products"
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Допустим, только владелец или администратор видят свои товары
+        user = self.request.user
+        if user.is_staff or user.has_perm("catalog.view_all_products"):
+            return queryset
+        return queryset.filter(owner=user)
