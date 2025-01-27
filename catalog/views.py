@@ -1,21 +1,19 @@
-# from django.shortcuts import render
-# from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseForbidden
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy, reverse
+from django.views import View
 from django.views.generic import (
     ListView,
     DetailView,
     TemplateView,
     CreateView,
-    UpdateView, DeleteView,
+    UpdateView,
+    DeleteView,
 )
-
 from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
-
-
-# Create your views here.
 
 
 class HomeView(ListView):
@@ -23,7 +21,6 @@ class HomeView(ListView):
 
 
 class ContactsView(TemplateView):
-    model = Product
     template_name = "catalog/contacts.html"
 
 
@@ -36,29 +33,34 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     success_url = reverse_lazy("products:home")
 
+    def form_valid(self, form):
+        form.instance.owner = self.request.user  # Устанавливаем владельца
+        return super().form_valid(form)
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+
+class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
-    success_url = reverse_lazy("products:product_list")
 
     def get_success_url(self):
         return reverse("products:product_detail", args=[self.kwargs.get("pk")])
 
     def get_form_class(self):
         user = self.request.user
-        if user == self.object.owner:
+        # Если пользователь - владелец продукта
+        if user == self.get_object().owner:
             return ProductForm
-        if user.has_perm("catalog.can_unpublish_product") and user.has_perm("catalog.can_delete_product"):
+        # Если пользователь - модератор
+        if user.has_perm("catalog.can_unpublish_product"):
             return ProductModeratorForm
         raise PermissionDenied
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['can_unpublish'] = self.request.user.has_perm('catalog.can_unpublish_product')
-        context['can_delete'] = self.request.user.has_perm('catalog.can_delete_product')
-        return context
+    def test_func(self):
+        # Получаем объект продукта
+        product = self.get_object()
+        # Можно редактировать продукт, если пользователь - владелец или модератор
+        return self.request.user == product.owner or self.request.user.has_perm("catalog.can_unpublish_product")
 
 
 class ProductListView(LoginRequiredMixin, ListView):
@@ -66,30 +68,49 @@ class ProductListView(LoginRequiredMixin, ListView):
     template_name = "catalog/product_list.html"
     context_object_name = "products"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_delete'] = self.request.user.has_perm('catalog.delete_product')
+        return context
+
     def get_queryset(self):
-        queryset = super().get_queryset()
-        # Допустим, только владелец или администратор видят свои товары
         user = self.request.user
-        if user.is_staff or user.has_perm("catalog.view_all_products"):
-            return queryset
-        return queryset.filter(owner=user)
+        # Проверка прав доступа
+        if self.request.user.is_staff or self.request.user.has_perm("catalog.view_all_products"):
+            return super().get_queryset()
+        return super().get_queryset().filter(owner=user)
 
 
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Product
-    template_name = "catalog/product_confirm_delete.html"  # Шаблон для подтверждения удаления
+    template_name = "catalog/product_confirm_delete.html"
     context_object_name = "product"
-    success_url = reverse_lazy('products:home')  # URL для перенаправления после успешного удаления
+    success_url = reverse_lazy('products:home')
 
     def test_func(self):
-        # Проверяем, имеет ли пользователь право удалять продукт
         product = self.get_object()
-        return self.request.user == product.owner or self.request.user.is_staff
+        # Проверяем, является ли пользователь владельцем продукта или имеет ли он право на удаление
+        if self.request.user == product.owner or self.request.user.has_perm("catalog.can_delete_product"):
+            return True
+        return False
 
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        # Ограничиваем видимость продуктов только для владельца или администраторов
-        user = self.request.user
-        if user.is_staff or user.has_perm("catalog.view_all_products"):
-            return queryset
-        return queryset.filter(owner=user)
+    def post(self, request, *args, **kwargs):
+        product = self.get_object()
+        # Проверяем права доступа
+        if not self.test_func():
+            return HttpResponseForbidden("У вас нет прав для удаления этого продукта.")
+
+        # Если права доступа есть, продолжаем с удалением
+        return super().post(request, *args, **kwargs)
+
+# class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
+#     permission_required = 'products.delete_product'
+#
+#     def get(self, request, *args, **kwargs):
+#         product = get_object_or_404(Product, id=self.kwargs['pk'])
+#         return render(request, 'catalog/product_confirm_delete.html', {'product': product})
+#
+#     def post(self, request, *args, **kwargs):
+#         product = get_object_or_404(Product, id=self.kwargs['pk'])
+#         product.delete()
+#         return redirect('products:product_list')

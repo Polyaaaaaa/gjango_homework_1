@@ -19,6 +19,10 @@ class ProductForm(StyleFormMixin, ModelForm):
         model = Product
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)  # Получаем текущего пользователя
+        super().__init__(*args, **kwargs)
+
     def clean_description(self):
         description = self.cleaned_data["description"]
         forbidden_words = [
@@ -49,4 +53,4 @@ class ProductForm(StyleFormMixin, ModelForm):
 class ProductModeratorForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Product
-        fields = "__all__"
+        fields = ('status', )
