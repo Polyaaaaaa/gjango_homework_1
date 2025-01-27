@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
+from django.contrib.auth.views import LoginView, LogoutView
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
@@ -12,7 +13,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
-from catalog.forms import ProductForm, ProductModeratorForm
+from catalog.forms import ProductForm, ProductModeratorForm, CustomUserCreationForm
 from catalog.models import Product
 
 
@@ -102,6 +103,21 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         # Если права доступа есть, продолжаем с удалением
         return super().post(request, *args, **kwargs)
+
+
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
+    success_url = reverse_lazy('home')  # Перенаправление после успешного входа
+
+
+class CustomLogoutView(LogoutView):
+    next_page = reverse_lazy('goodbye')  # Перенаправление на другую страницу после выхода
+
+
+class RegisterView(View):
+    form_class = CustomUserCreationForm
+    template_name = 'register.html'
+    success_url = reverse_lazy('home')
 
 # class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
 #     permission_required = 'products.delete_product'

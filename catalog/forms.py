@@ -54,3 +54,7 @@ class ProductModeratorForm(StyleFormMixin, ModelForm):
     class Meta:
         model = Product
         fields = ('status', )
+
+
+class CustomUserCreationForm(StyleFormMixin, ModelForm):
+    pass
