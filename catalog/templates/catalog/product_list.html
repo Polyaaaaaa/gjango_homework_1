@@ -19,6 +19,7 @@
                             </ul>
                             <a href="{% url 'products:product_detail' product.id %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Детали</a>
                             <a href="{% url 'products:product_update' product.id %}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Редактировать</a>
+                            <a href="{% url 'products:delete_product' product.id %}" class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Удалить</a>
                         </div>
 
             </div>

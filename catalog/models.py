@@ -19,7 +19,13 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="products", null=True, blank=True)  # Разрешаем NULL
+    PRODUCT_STATUS_CHOICES = [
+        ('unpublished', 'Неопубликован'),
+        ('published', 'Опубликован')
+    ]
+
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="products", null=True,
+                              blank=True)  # Разрешаем NULL
     name = models.CharField(max_length=150, verbose_name="Имя продукта")
     description = models.TextField(
         verbose_name="Описание продукта", null=True, blank=True
@@ -39,6 +45,13 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True)
 
+    status = models.CharField(
+        max_length=12,
+        choices=PRODUCT_STATUS_CHOICES,
+        default='unpublished',
+        verbose_name="Статус публикации"
+    )
+
     def __str__(self):
         return f"{self.name} {self.description}"
 
@@ -50,5 +63,4 @@ class Product(models.Model):
             ("can_unpublish_product", "Can unpublish product"),
             ("can_delete_product", "Can delete product"),
             ("view_all_products", "View all products"),
-
         ]
