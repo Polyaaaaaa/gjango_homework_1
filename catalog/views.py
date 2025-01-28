@@ -53,7 +53,7 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         # Если пользователь - модератор
         if user.has_perm("catalog.can_unpublish_product"):
             return ProductModeratorForm
-        raise PermissionDenied
+        raise PermissionDenied('Извините, но вы не обладаете достаточным количеством прав:((')
 
     def test_func(self):
         # Получаем объект продукта

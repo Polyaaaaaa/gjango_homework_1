@@ -9,8 +9,6 @@
                         {% csrf_token %}
                         {{ form.as_p }}
                     </div>
-                    {% if perms.catalog.can_unpublish_product %}
-
                     <button type="submit" class="btn btn-primary">
                         {% if object %}
                         Сохранить
