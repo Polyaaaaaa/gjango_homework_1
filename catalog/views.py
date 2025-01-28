@@ -1,10 +1,8 @@
+#catalog\views.py
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
-from django.contrib.auth.views import LoginView, LogoutView
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
-from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy, reverse
-from django.views import View
 from django.views.generic import (
     ListView,
     DetailView,
@@ -105,28 +103,6 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return super().post(request, *args, **kwargs)
 
 
-class CustomLoginView(LoginView):
-    template_name = 'registration/login.html'
-    success_url = reverse_lazy('home')  # Перенаправление после успешного входа
 
 
-class CustomLogoutView(LogoutView):
-    next_page = reverse_lazy('goodbye')  # Перенаправление на другую страницу после выхода
 
-
-class RegisterView(View):
-    form_class = CustomUserCreationForm
-    template_name = 'register.html'
-    success_url = reverse_lazy('home')
-
-# class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, View):
-#     permission_required = 'products.delete_product'
-#
-#     def get(self, request, *args, **kwargs):
-#         product = get_object_or_404(Product, id=self.kwargs['pk'])
-#         return render(request, 'catalog/product_confirm_delete.html', {'product': product})
-#
-#     def post(self, request, *args, **kwargs):
-#         product = get_object_or_404(Product, id=self.kwargs['pk'])
-#         product.delete()
-#         return redirect('products:product_list')

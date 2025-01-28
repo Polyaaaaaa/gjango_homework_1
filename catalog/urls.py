@@ -1,13 +1,11 @@
 # catalog/urls.py
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import path
 
 from catalog import views
 from catalog.views import HomeView, ContactsView, ProductDetailView, ProductCreateView, ProductUpdateView, \
     ProductListView, ProductDeleteView
 
-# from catalog.apps import CatalogConfig
-
-# app_name = CatalogConfig.name
 app_name = "products"
 
 urlpatterns = [
