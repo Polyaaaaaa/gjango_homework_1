@@ -108,7 +108,10 @@
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
                 <li class="nav-item ">
-                    <a class="nav-link" href="{% url 'users:logout' %}">Выйти</a>
+                    <form method="post" action="{% url 'users:logout' %}" style="display: inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-link nav-link">Выйти</button>
+                    </form>
                 </li>
                 {% else %}
                 <li class="nav-item ">
