@@ -23,14 +23,14 @@ class RegisterView(CreateView):
     def send_welcome_email(self, user_email):
         subject = 'Добро пожаловать в наш сервис!'
         message = 'Спасибо, что зарегистрировались в нашем сервере!'
-        from_email = 'polinasatrajkina@gmail.com'
-        recipient_list = [user_email, ]
+        from_email = 'polina.syatraikina@yandex.ru'
+        recipient_list = [user_email]
         send_mail(subject, message, from_email, recipient_list)
 
 
 class CustomLoginView(LoginView):
     template_name = 'users/login.html'
-    # success_url = reverse_lazy('products:home')  # Перенаправление после успешного входа
+    success_url = reverse_lazy('products:home')  # Перенаправление после успешного входа
 
 
 class CustomLogoutView(LogoutView):
