@@ -1,4 +1,3 @@
-#catalog\views.py
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
@@ -53,7 +52,7 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         # Если пользователь - модератор
         if user.has_perm("catalog.can_unpublish_product"):
             return ProductModeratorForm
-        raise PermissionDenied('Извините, но вы не обладаете достаточным количеством прав:((')
+        raise PermissionDenied('Извините, но вы не обладаете достаточным количеством прав.')
 
     def test_func(self):
         # Получаем объект продукта
@@ -89,9 +88,7 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         product = self.get_object()
         # Проверяем, является ли пользователь владельцем продукта или имеет ли он право на удаление
-        if self.request.user == product.owner or self.request.user.has_perm("catalog.can_delete_product"):
-            return True
-        return False
+        return self.request.user == product.owner or self.request.user.has_perm("catalog.can_delete_product")
 
     def post(self, request, *args, **kwargs):
         product = self.get_object()
@@ -101,8 +98,3 @@ class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         # Если права доступа есть, продолжаем с удалением
         return super().post(request, *args, **kwargs)
-
-
-
-
-
