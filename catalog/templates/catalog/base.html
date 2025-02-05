@@ -13,13 +13,11 @@
 
     <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/album/">
 
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
 
     <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
 
     <style>
         .bd-placeholder-img {
@@ -99,7 +97,6 @@
             display: block !important;
         }
     </style>
-
 
 </head>
 <body>
@@ -203,9 +200,7 @@
             <div class="col-lg-6 col-md-8 mx-auto">
                 {% block title %}
                     <a href="{% url 'blog:blogpost_list' %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Перейти к статьям</a>
-                    {% if perms.catalog.can_unpublish_product %}
-                        <a href="{% url 'products:product_form' %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Создать продукт</a>
-                    {% endif %}
+                    <a href="{% url 'products:product_form' %}"  class="btn btn-primary" tabindex="-1" role="button" aria-disabled="true">Создать продукт</a>
                 {% endblock %}
             </div>
         </div>

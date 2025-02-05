@@ -7,7 +7,15 @@
                 <div class="card">
                     <div class="card-body">
                         {% csrf_token %}
-                        {{ form.as_p }}
+                        {% for field in form %}
+                            {% if field.name == 'status' and not perms.catalog.can_unpublish_product %}
+                                <!-- Скрываем поле status для пользователей без права can_unpublish_product -->
+                            {% else %}
+                                <div class="form-group">
+                                    {{ field.label_tag }} {{ field }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
                     </div>
                     <button type="submit" class="btn btn-primary">
                         {% if object %}

@@ -10,7 +10,7 @@ from django.views.generic import (
     UpdateView,
     DeleteView,
 )
-from catalog.forms import ProductForm, ProductModeratorForm, CustomUserCreationForm
+from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
 
 
@@ -29,11 +29,15 @@ class ProductDetailView(DetailView):
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
+    template_name = 'catalog/product_form.html'
     success_url = reverse_lazy("products:home")
 
     def form_valid(self, form):
         form.instance.owner = self.request.user  # Устанавливаем владельца
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("products:product_detail", args=[self.object.pk])
 
 
 class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -59,6 +63,14 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         product = self.get_object()
         # Можно редактировать продукт, если пользователь - владелец или модератор
         return self.request.user == product.owner or self.request.user.has_perm("catalog.can_unpublish_product")
+
+    def form_valid(self, form):
+        # Проверяем, является ли пользователь модератором
+        if self.request.user.has_perm("catalog.can_unpublish_product"):
+            return super().form_valid(form)
+        # Если пользователь не модератор, удаляем поле 'status' из данных формы
+        form.cleaned_data.pop('status', None)
+        return super().form_valid(form)
 
 
 class ProductListView(LoginRequiredMixin, ListView):
