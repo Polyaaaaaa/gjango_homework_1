@@ -1,6 +1,6 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponse
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     ListView,
@@ -12,6 +12,17 @@ from django.views.generic import (
 )
 from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
+from django.core.cache import cache
+
+
+def cache_view(request):
+    data = cache.get('my_key')
+
+    if not data:
+        data = 'some expensive computation'
+        cache.set('my_key', data, 60 * 16)
+
+    return HttpResponse(data)
 
 
 class HomeView(ListView):

@@ -157,3 +157,10 @@ EMAIL_USE_SSL = True
 EMAIL_HOST_USER = 'polina.syatraikina@yandex.ru'
 EMAIL_HOST_PASSWORD = 'xrmietmoliehwwtm'
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.Rediscache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+    }
+}
