@@ -13,16 +13,20 @@ from django.views.generic import (
 from catalog.forms import ProductForm, ProductModeratorForm
 from catalog.models import Product
 from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+
+from catalog.services import ProductService
 
 
-def cache_view(request):
-    data = cache.get('my_key')
-
-    if not data:
-        data = 'some expensive computation'
-        cache.set('my_key', data, 60 * 16)
-
-    return HttpResponse(data)
+# def cache_view(request):
+#     data = cache.get('my_key')
+#
+#     if not data:
+#         data = 'some expensive computation'
+#         cache.set('my_key', data, 60 * 16)
+#
+#     return HttpResponse(data)
 
 
 class HomeView(ListView):
@@ -33,8 +37,20 @@ class ContactsView(TemplateView):
     template_name = "catalog/contacts.html"
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductDetailView(DetailView):
     model = Product
+    template_name = 'catalog/product_detail.html'
+    context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        product_id = self.object.id
+
+        context['full_name'] = ProductService.get_full_name(product_id)
+
+        return context
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
@@ -84,6 +100,7 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return super().form_valid(form)
 
 
+@method_decorator(cache_page(60 * 15), name='dispatch')
 class ProductListView(LoginRequiredMixin, ListView):
     model = Product
     template_name = "catalog/product_list.html"
@@ -95,11 +112,16 @@ class ProductListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
-        user = self.request.user
-        # Проверка прав доступа
-        if self.request.user.is_staff or self.request.user.has_perm("catalog.view_all_products"):
-            return super().get_queryset()
-        return super().get_queryset().filter(owner=user)
+        queryset = cache.get('products_queryset')
+        if not queryset:
+            user = self.request.user
+            queryset = super().get_queryset()
+            cache.set('products_queryset', queryset, 60 * 15)
+            # Проверка прав доступа
+            if self.request.user.is_staff or self.request.user.has_perm("catalog.view_all_products"):
+                pass
+            return queryset.filter(owner=user)
+        return queryset
 
 
 class ProductDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
