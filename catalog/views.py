@@ -1,6 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden, HttpResponse
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import (
     ListView,
@@ -11,7 +12,7 @@ from django.views.generic import (
     DeleteView,
 )
 from catalog.forms import ProductForm, ProductModeratorForm
-from catalog.models import Product
+from catalog.models import Product, Category
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from django.utils.decorators import method_decorator
@@ -19,14 +20,28 @@ from django.utils.decorators import method_decorator
 from catalog.services import ProductService
 
 
-# def cache_view(request):
-#     data = cache.get('my_key')
-#
-#     if not data:
-#         data = 'some expensive computation'
-#         cache.set('my_key', data, 60 * 16)
-#
-#     return HttpResponse(data)
+class ProductListByCategoryView(ListView):
+    model = Product
+    template_name = 'catalog/product_list_by_category.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        # Получаем идентификатор категории из URL
+        category_id = self.kwargs['category_id']
+
+        # Используем сервис для получения списка продуктов в категории
+        return ProductService.get_product_list(category_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Получаем объект категории
+        category_id = self.kwargs['category_id']
+        category = get_object_or_404(Category, id=category_id)
+
+        # Добавляем категорию в контекст
+        context['category'] = category
+        return context
 
 
 class HomeView(ListView):
@@ -45,11 +60,8 @@ class ProductDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         product_id = self.object.id
-
-        context['full_name'] = ProductService.get_full_name(product_id)
-
+        context['product_list'] = ProductService.get_product_list(product_id)
         return context
 
 
@@ -112,15 +124,20 @@ class ProductListView(LoginRequiredMixin, ListView):
         return context
 
     def get_queryset(self):
+        # Получаем кешированный queryset
         queryset = cache.get('products_queryset')
+
         if not queryset:
-            user = self.request.user
+            # Если кеш пуст, создаем новый queryset
             queryset = super().get_queryset()
-            cache.set('products_queryset', queryset, 60 * 15)
+
             # Проверка прав доступа
-            if self.request.user.is_staff or self.request.user.has_perm("catalog.view_all_products"):
-                pass
-            return queryset.filter(owner=user)
+            if not (self.request.user.is_staff or self.request.user.has_perm("catalog.view_all_products")):
+                queryset = queryset.filter(owner=self.request.user)
+
+            # Кешируем queryset
+            cache.set('products_queryset', queryset, 60 * 15)
+
         return queryset
 
 
