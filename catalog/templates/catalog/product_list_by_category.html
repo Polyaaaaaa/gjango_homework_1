@@ -1,0 +1,21 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}
+    <h1 class="fw-light">Продукты в категории "{{ category.name }}"</h1>
+{% endblock %}
+
+{% block content %}
+<p>{{ category.description }}</p>
+<ul>
+    {% for product in products %}
+    <li>
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.description }}</p>
+        <p>Цена: ${{ product.price }}</p>
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

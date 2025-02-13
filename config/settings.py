@@ -11,9 +11,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import os
-from dotenv import load_dotenv
 from pathlib import Path
 
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,7 +45,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "catalog",  # Добавлено приложение catalog
     "blog",  # Добавлено приложение blog
+    'users',  # Добавлено приложение users
 ]
+
+AUTH_USER_MODEL = 'users.CustomUser'
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -110,6 +113,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# URL для перенаправления после успешного входа
+LOGIN_REDIRECT_URL = 'products:home'
+
+LOGIN_URL = 'users:login'
+
+# URL для перенаправления после выхода из системы
+LOGOUT_REDIRECT_URL = 'products:home'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -138,3 +148,19 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'polina.syatraikina@yandex.ru'
+EMAIL_HOST_PASSWORD = 'xrmietmoliehwwtm'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://localhost:6379/1',
+    }
+}
